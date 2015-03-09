@@ -91,8 +91,9 @@ CGPoint RNCentroidOfTouchesInView(NSSet *touches, UIView *view) {
         maskLayer.path = exclusionPath.CGPath;
 
         // create grayscale image to mask context
+        CGBitmapInfo bitmapInfo = (CGBitmapInfo) kCGImageAlphaNone;
         CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceGray();
-        CGContextRef context = CGBitmapContextCreate(nil, maskLayer.bounds.size.width, maskLayer.bounds.size.height, 8, 0, colorSpace, kCGImageAlphaNone);
+        CGContextRef context = CGBitmapContextCreate(nil, maskLayer.bounds.size.width, maskLayer.bounds.size.height, 8, 0, colorSpace, bitmapInfo);
         CGContextTranslateCTM(context, 0, maskLayer.bounds.size.height);
         CGContextScaleCTM(context, 1.f, -1.f);
         [maskLayer renderInContext:context];
@@ -149,6 +150,8 @@ CGPoint RNCentroidOfTouchesInView(NSSet *touches, UIView *view) {
     if (error) {
         NSLog(@"error from convolution %ld", error);
     }
+    
+    CGBitmapInfo bitmapInfo = (CGBitmapInfo) kCGImageAlphaNoneSkipLast;
 
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
     CGContextRef ctx = CGBitmapContextCreate(outBuffer.data,
@@ -157,7 +160,7 @@ CGPoint RNCentroidOfTouchesInView(NSSet *touches, UIView *view) {
                                              8,
                                              outBuffer.rowBytes,
                                              colorSpace,
-                                             kCGImageAlphaNoneSkipLast);
+                                             bitmapInfo);
     CGImageRef imageRef = CGBitmapContextCreateImage(ctx);
     UIImage *returnImage = [UIImage imageWithCGImage:imageRef];
 
@@ -545,7 +548,6 @@ static RNGridMenu *rn_visibleGridMenu;
         NSInteger rowLength = ceilf(itemCount / (CGFloat)rowCount);
         NSInteger rowStartIndex = i * rowLength;
 
-        NSInteger offset = 0;
         if ((i + 1) * rowLength > itemCount) {
             rowLength = itemCount - i * rowLength;
         }
@@ -855,4 +857,6 @@ static RNGridMenu *rn_visibleGridMenu;
 }
 
 @end
+
+
 
